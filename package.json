@@ -17,7 +17,18 @@
     "lint": "next lint",
     "analyze": "ANALYZE=true next build",
     "clear-cache": "node clear-cache.js",
-    "test-cart": "node test-cart-connection.js"
+    "test-cart": "node test-cart-connection.js",
+    "setup": "chmod +x scripts/*.sh && ./scripts/setup-storefront.sh",
+    "deploy": "chmod +x scripts/*.sh && ./scripts/deploy.sh",
+    "test-deployment": "chmod +x scripts/*.sh && ./scripts/test-deployment.sh",
+    "manage": "chmod +x scripts/*.sh && ./scripts/manage-storefront.sh",
+    "pm2:start": "pm2 start ecosystem.config.js",
+    "pm2:stop": "pm2 stop kabiki-storefront",
+    "pm2:restart": "pm2 restart kabiki-storefront",
+    "pm2:logs": "pm2 logs kabiki-storefront",
+    "pm2:status": "pm2 status kabiki-storefront",
+    "health": "curl -s http://localhost:8000/api/health | jq .",
+    "validate": "chmod +x scripts/*.sh && ./scripts/validate-setup.sh"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",

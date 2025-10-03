@@ -1,0 +1,85 @@
+{
+  "name": "kabiki-storefront",
+  "version": "1.0.3",
+  "description": "Kabiki - Luxurious Organic Soaps Storefront built with Medusa V2",
+  "environment": "production",
+  "runtime": "nodejs",
+  "nodeVersion": "18",
+  "packageManager": "yarn",
+  "domain": "{{DOMAIN}}",
+  "subdomain": "{{SUBDOMAIN}}",
+  "build": {
+    "command": "yarn build",
+    "outputDirectory": ".next",
+    "installCommand": "yarn install --frozen-lockfile",
+    "buildTimeout": 600,
+    "nodeOptions": "--max-old-space-size=4096"
+  },
+  "start": {
+    "command": "yarn start",
+    "port": "{{PORT}}",
+    "healthCheck": {
+      "path": "/api/health",
+      "timeout": 30,
+      "interval": 60,
+      "retries": 3
+    }
+  },
+  "env": {
+    "NODE_ENV": "production",
+    "MEDUSA_BACKEND_URL": "{{MEDUSA_BACKEND_URL}}",
+    "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY": "{{NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}}",
+    "NEXT_PUBLIC_BASE_URL": "{{NEXT_PUBLIC_BASE_URL}}",
+    "NEXT_PUBLIC_DEFAULT_REGION": "{{NEXT_PUBLIC_DEFAULT_REGION}}",
+    "NEXT_PUBLIC_STRIPE_KEY": "{{NEXT_PUBLIC_STRIPE_KEY}}",
+    "REVALIDATE_SECRET": "{{REVALIDATE_SECRET}}",
+    "PORT": "{{PORT}}"
+  },
+  "scaling": {
+    "minInstances": 1,
+    "maxInstances": 3,
+    "cpuThreshold": 80,
+    "memoryThreshold": 85
+  },
+  "monitoring": {
+    "enabled": true,
+    "alerts": {
+      "email": "admin@kabiki.com",
+      "slack": null
+    },
+    "metrics": {
+      "responseTime": true,
+      "errorRate": true,
+      "memoryUsage": true,
+      "cpuUsage": true
+    }
+  },
+  "security": {
+    "https": true,
+    "hsts": true,
+    "cors": {
+      "enabled": true,
+      "origins": ["{{NEXT_PUBLIC_BASE_URL}}", "{{MEDUSA_BACKEND_URL}}"]
+    },
+    "rateLimit": {
+      "enabled": true,
+      "requests": 1000,
+      "window": "15m"
+    }
+  },
+  "cache": {
+    "static": {
+      "enabled": true,
+      "maxAge": "1y"
+    },
+    "api": {
+      "enabled": true,
+      "maxAge": "5m"
+    }
+  },
+  "logs": {
+    "level": "info",
+    "format": "json",
+    "retention": "30d"
+  }
+}
