@@ -19,7 +19,17 @@ rm -rf node_modules/.cache
 echo "📦 Attempting build with npm..."
 if command -v npm &> /dev/null; then
     echo "Using npm for installation and build..."
-    npm ci --production=false
+    
+    # Check if package-lock.json exists, if not use npm install instead of npm ci
+    if [ -f "package-lock.json" ]; then
+        echo "Found package-lock.json, using npm ci..."
+        npm ci --omit=dev
+    else
+        echo "No package-lock.json found, using npm install..."
+        rm -f yarn.lock  # Remove yarn.lock to avoid conflicts
+        npm install
+    fi
+    
     npm run build
     echo "✅ Build completed successfully with npm!"
     exit 0
