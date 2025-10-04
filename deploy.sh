@@ -132,7 +132,11 @@ fi
 
 # Start application with PM2
 echo -e "${YELLOW}🚀 Starting application...${NC}"
-pm2 start ecosystem.config.js
+if [ -f "ecosystem.config.js" ]; then
+    pm2 start ecosystem.config.js
+else
+    pm2 start npm --name "kabiki-storefront" -- start
+fi
 echo -e "${GREEN}✅ Application started${NC}"
 
 # Save PM2 configuration
