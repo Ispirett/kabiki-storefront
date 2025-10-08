@@ -3,6 +3,7 @@ import Image from "next/image"
 import React from "react"
 
 import PlaceholderImage from "@modules/common/icons/placeholder-image"
+import { getImageUrl } from "@lib/util/image-loader"
 
 type ThumbnailProps = {
   thumbnail?: string | null
@@ -50,15 +51,18 @@ const ImageOrPlaceholder = ({
   image,
   size,
 }: Pick<ThumbnailProps, "size"> & { image?: string }) => {
-  return image ? (
+  const imageUrl = getImageUrl(image)
+  
+  return imageUrl ? (
     <Image
-      src={image}
+      src={imageUrl}
       alt="Product Image"
       className="absolute inset-0 object-cover object-center transition-transform duration-300"
       draggable={false}
       quality={75}
       sizes="(max-width: 576px) 280px, (max-width: 768px) 360px, (max-width: 992px) 480px, 800px"
       fill
+      unoptimized={imageUrl.includes('localhost')}
     />
   ) : (
     <div className="w-full h-full absolute inset-0 flex items-center justify-center bg-gradient-to-br from-orange-100 to-amber-100">

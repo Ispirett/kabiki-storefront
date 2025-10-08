@@ -5,6 +5,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Image from "next/image"
 import { HttpTypes } from "@medusajs/types"
 import { useState, useMemo } from "react"
+import { getImageUrl } from "@lib/util/image-loader"
 
 interface SoapShowcaseProps {
   products: HttpTypes.StoreProduct[]
@@ -235,12 +236,18 @@ const SoapShowcase = ({ products, region }: SoapShowcaseProps) => {
                   )}
                   
                   <div className="aspect-square relative overflow-hidden">
-                    <Image
-                      src={imageUrl}
-                      alt={product.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
+                    {(() => {
+                      const fullImageUrl = getImageUrl(imageUrl)
+                      return (
+                        <Image
+                          src={fullImageUrl}
+                          alt={product.title}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-300"
+                          unoptimized={fullImageUrl.includes('localhost')}
+                        />
+                      )
+                    })()}
                   </div>
                   
                   <div className="p-6">

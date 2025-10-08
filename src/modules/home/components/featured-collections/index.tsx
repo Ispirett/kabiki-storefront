@@ -2,6 +2,7 @@ import { Button, Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
 import { HttpTypes } from "@medusajs/types"
+import { getImageUrl } from "@lib/util/image-loader"
 
 interface FeaturedCollectionsProps {
   collections: HttpTypes.StoreCollection[]
@@ -71,12 +72,18 @@ const FeaturedCollections = ({ collections }: FeaturedCollectionsProps) => {
                 <LocalizedClientLink href={isUsingSamples ? "/store" : `/collections/${collection.handle}`}>
                   <div className="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
                     <div className={`${isMainFeature ? 'aspect-[16/10]' : 'aspect-square'} relative overflow-hidden`}>
-                      <Image
-                        src={getCollectionImage(collection, index)}
-                        alt={collection.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                      {(() => {
+                        const imageUrl = getImageUrl(getCollectionImage(collection, index))
+                        return (
+                          <Image
+                            src={imageUrl}
+                            alt={collection.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            unoptimized={imageUrl.includes('localhost')}
+                          />
+                        )
+                      })()}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                       
                       {/* Featured Badge */}

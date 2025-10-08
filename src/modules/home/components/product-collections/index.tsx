@@ -2,6 +2,7 @@ import { Button, Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
 import { HttpTypes } from "@medusajs/types"
+import { getImageUrl } from "@lib/util/image-loader"
 
 interface ProductCollectionsProps {
   collections: HttpTypes.StoreCollection[]
@@ -41,14 +42,17 @@ const ProductCollections = ({ collections }: ProductCollectionsProps) => {
               "Purity of Organic Soaps"
             ]
             
+            const imageUrl = getImageUrl(getCollectionImage(collection, index))
+            
             return (
               <div key={collection.id} className="group relative bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                 <div className="aspect-square relative">
                   <Image
-                    src={getCollectionImage(collection, index)}
+                    src={imageUrl}
                     alt={collection.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    unoptimized={imageUrl.includes('localhost')}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   <div className={`absolute bottom-0 left-0 right-0 p-8 text-white ${index === 1 ? 'text-center' : ''}`}>
