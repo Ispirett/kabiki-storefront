@@ -104,16 +104,15 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
-  let redirectUrl = request.nextUrl.href
+  // check if the url is a static asset first
+  if (request.nextUrl.pathname.includes(".")) {
+    return NextResponse.next()
+  }
 
-  let response = NextResponse.redirect(redirectUrl, 307)
-
-  let cacheIdCookie = request.cookies.get("_medusa_cache_id")
-
-  let cacheId = cacheIdCookie?.value || crypto.randomUUID()
+  const cacheIdCookie = request.cookies.get("_medusa_cache_id")
+  const cacheId = cacheIdCookie?.value || crypto.randomUUID()
 
   const regionMap = await getRegionMap(cacheId)
-
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
   const urlHasCountryCode =
@@ -124,32 +123,35 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
+  // if one of the country codes is in the url and the cache id is not set, set the cache id
   if (urlHasCountryCode && !cacheIdCookie) {
+    const response = NextResponse.next()
     response.cookies.set("_medusa_cache_id", cacheId, {
       maxAge: 60 * 60 * 24,
     })
-
     return response
-  }
-
-  // check if the url is a static asset
-  if (request.nextUrl.pathname.includes(".")) {
-    return NextResponse.next()
   }
 
   const redirectPath =
     request.nextUrl.pathname === "/" ? "" : request.nextUrl.pathname
-
   const queryString = request.nextUrl.search ? request.nextUrl.search : ""
 
   // If no country code is set, we redirect to the relevant region.
   if (!urlHasCountryCode && countryCode) {
-    redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
-    response = NextResponse.redirect(redirectUrl, 307)
+    const redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
+    const response = NextResponse.redirect(redirectUrl, 307)
+
+    // Set cache ID on redirect
+    if (!cacheIdCookie) {
+      response.cookies.set("_medusa_cache_id", cacheId, {
+        maxAge: 60 * 60 * 24,
+      })
+    }
+
+    return response
   }
 
-  return response
+  return NextResponse.next()
 }
 
 export const config = {

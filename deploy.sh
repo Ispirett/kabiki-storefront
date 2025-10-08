@@ -22,7 +22,7 @@ command_exists() {
 
 # Check required tools
 echo -e "${YELLOW}🔍 Checking required tools...${NC}"
-required_tools=("node" "yarn" "pm2")
+required_tools=("node" "pm2")
 missing_tools=()
 
 for tool in "${required_tools[@]}"; do
@@ -30,6 +30,19 @@ for tool in "${required_tools[@]}"; do
         missing_tools+=("$tool")
     fi
 done
+
+# Detect package manager
+if command_exists "yarn"; then
+    PKG_MANAGER="yarn"
+    INSTALL_CMD="yarn install --frozen-lockfile"
+    BUILD_CMD="yarn build"
+elif command_exists "npm"; then
+    PKG_MANAGER="npm"
+    INSTALL_CMD="npm ci"
+    BUILD_CMD="npm run build"
+else
+    missing_tools+=("npm or yarn")
+fi
 
 if [ ${#missing_tools[@]} -ne 0 ]; then
     echo -e "${RED}❌ Missing required tools: ${missing_tools[*]}${NC}"
@@ -40,7 +53,7 @@ fi
 echo -e "${GREEN}✅ All required tools are available${NC}"
 
 # Check if environment is configured
-if [ ! -f ".env.production" ] && [ ! -f ".env.local" ]; then
+if [ ! -f ".env.production" ] && [ ! -f ".env.local" ] && [ ! -f ".env" ]; then
     echo -e "${RED}❌ No environment configuration found${NC}"
     echo -e "${YELLOW}Please run ./scripts/setup-storefront.sh first${NC}"
     exit 1
@@ -49,6 +62,9 @@ fi
 # Load environment
 if [ -f ".env.production" ]; then
     source .env.production
+    ENV_TYPE="production"
+elif [ -f ".env" ]; then
+    source .env
     ENV_TYPE="production"
 else
     source .env.local
@@ -110,14 +126,14 @@ if [ "$SKIP_BACKUP" = false ] && pm2 list | grep -q "kabiki-storefront"; then
 fi
 
 # Install dependencies
-echo -e "${YELLOW}📦 Installing dependencies...${NC}"
-yarn install --frozen-lockfile
+echo -e "${YELLOW}📦 Installing dependencies with $PKG_MANAGER...${NC}"
+$INSTALL_CMD
 echo -e "${GREEN}✅ Dependencies installed${NC}"
 
 # Build application
 if [ "$FORCE_REBUILD" = true ] || [ ! -d ".next" ]; then
     echo -e "${YELLOW}🔨 Building application...${NC}"
-    yarn build
+    $BUILD_CMD
     echo -e "${GREEN}✅ Build completed${NC}"
 else
     echo -e "${GREEN}✅ Using existing build${NC}"
