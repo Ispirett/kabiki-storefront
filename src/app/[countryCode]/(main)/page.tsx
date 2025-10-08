@@ -28,28 +28,25 @@ export default async function Home(props: {
   try {
     const region = await getRegion(countryCode)
 
+    // Fetch collections with products included
     const { collections } = await listCollections({
-      fields: "id, handle, title, metadata",
+      fields: "*products,+products.images",
       limit: "100",
     }).catch(() => ({ collections: [] }))
 
-    // Fetch products for the showcase (will filter for published on client side)
+    // Fetch products for the showcase
     const { response: productsResponse } = await listProducts({
       queryParams: {
-        limit: 20, // Fetch more to account for filtering
+        limit: 20,
         fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags,+type,+images",
       },
       countryCode,
     })
 
-    // Filter for published products only (defensive filtering)
     const publishedProducts = productsResponse.products.filter(product => {
-      // In Medusa v2, products are published by default if they're returned by the store API
-      // But we can check for status field if it exists
       return !product.status || product.status === "published"
     })
 
-    // Create a fallback region if none found
     const fallbackRegion = region || {
       id: 'fallback',
       name: 'Default Region',
@@ -69,7 +66,6 @@ export default async function Home(props: {
   } catch (error) {
     console.error("Error loading home page:", error)
     
-    // Fallback content when there are errors
     return (
       <>
         <Hero />

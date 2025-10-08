@@ -8,43 +8,25 @@ interface FeaturedCollectionsProps {
 }
 
 const FeaturedCollections = ({ collections }: FeaturedCollectionsProps) => {
-  const collectionImages = [
+  // Fallback images only if product has no image
+  const fallbackImages = [
     "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1556228578-8c89e6adf883?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
   ]
 
-  // Sample collections if none exist in backend
-  const sampleCollections = [
-    {
-      id: "sample-1",
-      title: "Luxury Spa Collection",
-      handle: "luxury-spa",
-      metadata: {
-        description: "Indulge in our premium spa-quality organic soaps, crafted with the finest natural ingredients for the ultimate luxury experience."
-      }
-    },
-    {
-      id: "sample-2", 
-      title: "Essential Daily Care",
-      handle: "daily-care",
-      metadata: {
-        description: "Perfect for everyday use, these gentle organic soaps cleanse and nourish your skin with natural botanicals."
-      }
-    },
-    {
-      id: "sample-3",
-      title: "Aromatherapy Blends",
-      handle: "aromatherapy",
-      metadata: {
-        description: "Transform your daily routine with our therapeutic essential oil blends that soothe both body and mind."
+  // Get image from collection's first product, or use fallback
+  const getCollectionImage = (collection: HttpTypes.StoreCollection, index: number) => {
+    if (collection.products && collection.products.length > 0) {
+      const firstProduct = collection.products[0]
+      if (firstProduct.images && firstProduct.images.length > 0) {
+        return firstProduct.images[0].url
       }
     }
-  ]
+    return fallbackImages[index % fallbackImages.length]
+  }
 
-  // Use real collections if available, otherwise show samples
-  const displayCollections = collections.length > 0 ? collections.slice(0, 3) : sampleCollections
+  const displayCollections = collections.slice(0, 3)
   const isUsingSamples = collections.length === 0
   
 
@@ -90,7 +72,7 @@ const FeaturedCollections = ({ collections }: FeaturedCollectionsProps) => {
                   <div className="bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 h-full">
                     <div className={`${isMainFeature ? 'aspect-[16/10]' : 'aspect-square'} relative overflow-hidden`}>
                       <Image
-                        src={collectionImages[index % collectionImages.length]}
+                        src={getCollectionImage(collection, index)}
                         alt={collection.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
