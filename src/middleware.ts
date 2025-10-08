@@ -104,8 +104,14 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
-  // check if the url is a static asset first
-  if (request.nextUrl.pathname.includes(".")) {
+  const pathname = request.nextUrl.pathname
+  
+  // Skip middleware for static files and special files
+  if (
+    pathname.includes(".") ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml"
+  ) {
     return NextResponse.next()
   }
 
@@ -156,6 +162,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
   ],
 }
