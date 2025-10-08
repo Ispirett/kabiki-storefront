@@ -5,6 +5,8 @@ import { Heading } from "@medusajs/ui"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Image from "next/image"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Collections | Kabiki - Organic Soaps",
   description: "Explore our curated collections of handcrafted organic soaps, each made with love and natural ingredients.",

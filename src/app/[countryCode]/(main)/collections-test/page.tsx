@@ -1,5 +1,7 @@
 import { listCollections } from "@lib/data/collections"
 
+export const dynamic = "force-dynamic"
+
 export default async function CollectionsTestPage(props: {
   params: Promise<{ countryCode: string }>
 }) {

@@ -3,6 +3,8 @@ import { Metadata } from "next"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import StoreTemplate from "@modules/store/templates"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "All Products | Kabiki - Organic Soaps",
   description: "Discover our complete collection of handcrafted organic soaps made with premium natural ingredients for luxurious skincare.",

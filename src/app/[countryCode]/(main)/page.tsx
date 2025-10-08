@@ -11,6 +11,8 @@ import { listCollections } from "@lib/data/collections"
 import { listProducts } from "@lib/data/products"
 import { getRegion } from "@lib/data/regions"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Kabiki - Luxurious Organic Soaps",
   description:
