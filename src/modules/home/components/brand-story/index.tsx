@@ -1,88 +1,156 @@
 import { Heading } from "@medusajs/ui"
 import Image from "next/image"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { HttpTypes } from "@medusajs/types"
+import { getImageUrl } from "@lib/util/image-loader"
 
-const BrandStory = () => {
+interface BrandStoryProps {
+  collections?: HttpTypes.StoreCollection[]
+}
+
+const BrandStory = ({ collections = [] }: BrandStoryProps) => {
+  // Fallback images from local collections folder
+  const fallbackImages = [
+    "/images/collections/Lemon Soap.jpg",
+    "/images/collections/Coconut Milk Soap.jpg",
+    "/images/collections/cinamon soap.jpg",
+  ]
+  
+  const subtitles = [
+    "Nourish Your Skin",
+    "The Magic of Organic Soap",
+    "Purity of Organic Soaps"
+  ]
+  
+  // Use actual collections if available (minimum 3)
+  const displayCollections = collections.slice(0, 3)
+  const hasCollections = displayCollections.length >= 3
+  
+  // Get image for a collection - from product or fallback
+  const getCollectionImage = (collection: HttpTypes.StoreCollection | undefined, index: number) => {
+    if (collection?.products && collection.products.length > 0) {
+      const firstProduct = collection.products[0]
+      if (firstProduct.images && firstProduct.images.length > 0) {
+        return getImageUrl(firstProduct.images[0].url)
+      }
+    }
+    return fallbackImages[index % fallbackImages.length]
+  }
+  
+  const collectionData = hasCollections
+    ? displayCollections.map((col, idx) => ({
+        title: col.title,
+        subtitle: subtitles[idx],
+        image: getCollectionImage(col, idx),
+        handle: col.handle
+      }))
+    : [
+        {
+          title: "Explore Our\nCollections",
+          subtitle: subtitles[0],
+          image: fallbackImages[0],
+          handle: "store"
+        },
+        {
+          title: "Handcrafted\nWith Love",
+          subtitle: subtitles[1],
+          image: fallbackImages[1],
+          handle: "store"
+        },
+        {
+          title: "Natural\nIngredients",
+          subtitle: subtitles[2],
+          image: fallbackImages[2],
+          handle: "store"
+        }
+      ]
   return (
     <div className="py-20 bg-gradient-to-b from-amber-50 to-white">
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
           
-          {/* Left Section - Luxurious Organic Soap Collection */}
+          {/* Left Section */}
           <div className="relative">
-            <div className="bg-white rounded-3xl p-8 shadow-xl">
-              <div className="aspect-square relative mb-6 rounded-2xl overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1556228578-8c89e6adf883?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-                  alt="Luxurious organic soap collection"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-              <p className="text-xs uppercase tracking-wider text-orange-600 mb-3">
-                Nourish Your Skin
-              </p>
-              <Heading level="h3" className="text-2xl font-serif font-light text-gray-800 mb-4">
-                Luxurious Organic
-                <br />
-                Soap Collection
-              </Heading>
-              <button className="text-sm text-gray-600 hover:text-orange-600 transition-colors border-b border-gray-300 hover:border-orange-600 pb-1">
-                SHOP NOW
-              </button>
-            </div>
-          </div>
-
-          {/* Center Section - Pure and Natural Cleansing */}
-          <div className="relative">
-            <div className="text-center">
-              <div className="aspect-square relative mb-8 rounded-3xl overflow-hidden shadow-2xl">
-                <Image
-                  src="https://images.unsplash.com/photo-1571781926291-c477ebfd024b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80"
-                  alt="Pure and natural cleansing products"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                <div className="absolute bottom-8 left-8 right-8 text-white">
-                  <p className="text-xs uppercase tracking-wider text-orange-200 mb-2">
-                    The Magic of Organic Soap
-                  </p>
-                  <Heading level="h3" className="text-2xl font-serif font-light">
-                    Pure and Natural
-                    <br />
-                    Cleansing
-                  </Heading>
+            <LocalizedClientLink href={hasCollections ? `/collections/${collectionData[0].handle}` : "/store"}>
+              <div className="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="aspect-square relative mb-6 rounded-2xl overflow-hidden">
+                  <Image
+                    src={collectionData[0].image}
+                    alt={collectionData[0].title}
+                    fill
+                    className="object-cover"
+                  />
                 </div>
+                <p className="text-xs uppercase tracking-wider text-orange-600 mb-3">
+                  {collectionData[0].subtitle}
+                </p>
+                <Heading level="h3" className="text-2xl font-serif font-light text-gray-800 mb-4">
+                  {collectionData[0].title.split('\n').map((line, i) => (
+                    <span key={i}>{line}<br /></span>
+                  ))}
+                </Heading>
+                <button className="text-sm text-gray-600 hover:text-orange-600 transition-colors border-b border-gray-300 hover:border-orange-600 pb-1">
+                  SHOP NOW
+                </button>
               </div>
-              <button className="text-sm text-gray-600 hover:text-orange-600 transition-colors border-b border-gray-300 hover:border-orange-600 pb-1">
-                SHOP NOW
-              </button>
-            </div>
+            </LocalizedClientLink>
           </div>
 
-          {/* Right Section - Our Natural Cleansing Solutions */}
+          {/* Center Section */}
           <div className="relative">
-            <div className="bg-white rounded-3xl p-8 shadow-xl">
-              <div className="aspect-square relative mb-6 rounded-2xl overflow-hidden">
-                <Image
-                  src="https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80"
-                  alt="Natural cleansing solutions"
-                  fill
-                  className="object-cover"
-                />
+            <LocalizedClientLink href={hasCollections ? `/collections/${collectionData[1].handle}` : "/store"}>
+              <div className="text-center">
+                <div className="aspect-square relative mb-8 rounded-3xl overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2">
+                  <Image
+                    src={collectionData[1].image}
+                    alt={collectionData[1].title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  <div className="absolute bottom-8 left-8 right-8 text-white">
+                    <p className="text-xs uppercase tracking-wider text-orange-200 mb-2">
+                      {collectionData[1].subtitle}
+                    </p>
+                    <Heading level="h3" className="text-2xl font-serif font-light">
+                      {collectionData[1].title.split('\n').map((line, i) => (
+                        <span key={i}>{line}<br /></span>
+                      ))}
+                    </Heading>
+                  </div>
+                </div>
+                <button className="text-sm text-gray-600 hover:text-orange-600 transition-colors border-b border-gray-300 hover:border-orange-600 pb-1">
+                  SHOP NOW
+                </button>
               </div>
-              <p className="text-xs uppercase tracking-wider text-orange-600 mb-3">
-                Purity of Organic Soaps
-              </p>
-              <Heading level="h3" className="text-2xl font-serif font-light text-gray-800 mb-4">
-                Our Natural
-                <br />
-                Cleansing Solutions
-              </Heading>
-              <button className="text-sm text-gray-600 hover:text-orange-600 transition-colors border-b border-gray-300 hover:border-orange-600 pb-1">
-                SHOP NOW
-              </button>
-            </div>
+            </LocalizedClientLink>
+          </div>
+
+          {/* Right Section */}
+          <div className="relative">
+            <LocalizedClientLink href={hasCollections ? `/collections/${collectionData[2].handle}` : "/store"}>
+              <div className="bg-white rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                <div className="aspect-square relative mb-6 rounded-2xl overflow-hidden">
+                  <Image
+                    src={collectionData[2].image}
+                    alt={collectionData[2].title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <p className="text-xs uppercase tracking-wider text-orange-600 mb-3">
+                  {collectionData[2].subtitle}
+                </p>
+                <Heading level="h3" className="text-2xl font-serif font-light text-gray-800 mb-4">
+                  {collectionData[2].title.split('\n').map((line, i) => (
+                    <span key={i}>{line}<br /></span>
+                  ))}
+                </Heading>
+                <button className="text-sm text-gray-600 hover:text-orange-600 transition-colors border-b border-gray-300 hover:border-orange-600 pb-1">
+                  SHOP NOW
+                </button>
+              </div>
+            </LocalizedClientLink>
           </div>
 
         </div>

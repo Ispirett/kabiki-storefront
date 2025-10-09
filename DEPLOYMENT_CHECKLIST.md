@@ -107,6 +107,9 @@ pm2 show kabiki-storefront | grep NEXT_PUBLIC_MEDUSA_BACKEND_URL
 - [ ] Featured collection images display
 - [ ] Product detail page images display
 - [ ] Store page product grid images display
+- [ ] Cart page product images display
+- [ ] Cart dropdown product thumbnails display
+- [ ] Order confirmation page images display
 - [ ] No broken image icons
 - [ ] No 404 errors in browser console
 

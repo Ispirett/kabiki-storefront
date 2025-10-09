@@ -9,11 +9,11 @@ interface ProductCollectionsProps {
 }
 
 const ProductCollections = ({ collections }: ProductCollectionsProps) => {
-  // Fallback images only if product has no image
+  // Fallback images from local collections folder
   const fallbackImages = [
-    "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    "/images/collections/Cedarwood Soap.webp",
+    "/images/collections/Patchouli Soap.webp",
+    "/images/collections/Oud Soap.webp",
   ]
 
   // Get image from collection's first product, or use fallback

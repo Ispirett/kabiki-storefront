@@ -60,7 +60,7 @@ export default async function Home(props: {
         <SoapShowcase products={publishedProducts} region={fallbackRegion} />
         <FeaturedCollections collections={collections || []} />
         <ProductCollections collections={collections || []} />
-        <BrandStory />
+        <BrandStory collections={collections || []} />
       </>
     )
   } catch (error) {
@@ -79,7 +79,7 @@ export default async function Home(props: {
             </p>
           </div>
         </div>
-        <BrandStory />
+        <BrandStory collections={[]} />
       </>
     )
   }

@@ -15,7 +15,12 @@ export function getImageUrl(src: string | null | undefined): string {
     return src
   }
 
-  // If it's a relative path, prepend the backend URL
+  // If it's a local public folder path (starts with /images/), return as is
+  if (src.startsWith("/images/")) {
+    return src
+  }
+
+  // If it's a relative path from Medusa backend, prepend the backend URL
   // Remove leading slash if present to avoid double slashes
   const cleanPath = src.startsWith("/") ? src.slice(1) : src
   return `${BACKEND_URL}/${cleanPath}`

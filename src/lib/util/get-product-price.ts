@@ -4,20 +4,12 @@ import { convertToLocale } from "./money"
 
 export const getPricesForVariant = (variant: any) => {
   if (!variant?.calculated_price?.calculated_amount) {
-    console.warn('No calculated price found for variant:', variant?.id)
     return null
   }
 
   // Fallback currency code if not available
   const currencyCode = variant.calculated_price.currency_code || 'USD'
   const amount = variant.calculated_price.calculated_amount
-
-  console.log('Processing variant price:', {
-    variantId: variant.id,
-    amount,
-    currencyCode,
-    originalAmount: variant.calculated_price.original_amount
-  })
 
   try {
     const calculatedPrice = convertToLocale({
@@ -30,7 +22,7 @@ export const getPricesForVariant = (variant: any) => {
       currency_code: currencyCode,
     }) : null
 
-    const result = {
+    return {
       calculated_price_number: amount,
       calculated_price: calculatedPrice,
       original_price_number: variant.calculated_price.original_amount,
@@ -42,9 +34,6 @@ export const getPricesForVariant = (variant: any) => {
         amount
       ) : null,
     }
-
-    console.log('Formatted price result:', result)
-    return result
   } catch (error) {
     console.warn('Error formatting variant price:', error)
     // Return basic price info as fallback
@@ -73,7 +62,6 @@ export function getProductPrice({
   variantId?: string
 }) {
   if (!product || !product.id) {
-    console.warn("No product provided to getProductPrice")
     return {
       product: null,
       cheapestPrice: null,
@@ -84,7 +72,6 @@ export function getProductPrice({
   const cheapestPrice = () => {
     try {
       if (!product || !product.variants?.length) {
-        console.warn('No product or variants found:', { productId: product?.id, variantCount: product?.variants?.length })
         return null
       }
 
@@ -93,14 +80,7 @@ export function getProductPrice({
         v?.calculated_price?.calculated_amount !== null
       )
 
-      console.log('Variants with prices:', {
-        totalVariants: product.variants.length,
-        variantsWithPrices: variantsWithPrices.length,
-        sampleVariant: variantsWithPrices[0]
-      })
-
       if (variantsWithPrices.length === 0) {
-        console.warn('No variants with calculated prices found')
         return null
       }
 
@@ -112,10 +92,8 @@ export function getProductPrice({
           )
         })[0]
 
-      console.log('Cheapest variant found:', cheapestVariant?.id, cheapestVariant?.calculated_price?.calculated_amount)
       return getPricesForVariant(cheapestVariant)
     } catch (error) {
-      console.warn("Error getting cheapest price:", error)
       return null
     }
   }
@@ -136,7 +114,6 @@ export function getProductPrice({
 
       return getPricesForVariant(variant)
     } catch (error) {
-      console.warn("Error getting variant price:", error)
       return null
     }
   }
