@@ -23,9 +23,11 @@ export default async function Footer() {
               href="/"
               className="inline-block"
             >
-              <h2 className="text-3xl font-serif font-light text-white hover:text-orange-300 transition-colors duration-300">
-                Kabiki
-              </h2>
+              <img 
+                src="/images/logo.png" 
+                alt="Kabiki Logo" 
+                className="h-16 w-auto hover:opacity-80 transition-opacity duration-300"
+              />
             </LocalizedClientLink>
             <p className="text-gray-300 leading-relaxed">
               Handcrafted organic soaps made with love and natural ingredients to nourish your skin and protect the planet.

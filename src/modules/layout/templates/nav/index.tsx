@@ -25,10 +25,14 @@ export default async function Nav() {
           <div className="flex items-center justify-center lg:justify-start lg:flex-1">
             <LocalizedClientLink
               href="/"
-              className="font-serif text-3xl font-light text-gray-900 hover:text-orange-600 transition-colors duration-300"
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity duration-300"
               data-testid="nav-store-link"
             >
-              Kabiki
+              <img 
+                src="/images/logo.png" 
+                alt="Kabiki Logo" 
+                className="h-12 w-auto"
+              />
             </LocalizedClientLink>
           </div>
 
