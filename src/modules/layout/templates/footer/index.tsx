@@ -1,6 +1,7 @@
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
 import { Text, clx } from "@medusajs/ui"
+import Image from "next/image"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
@@ -23,9 +24,11 @@ export default async function Footer() {
               href="/"
               className="inline-block"
             >
-              <img 
+              <Image 
                 src="/images/logo.png" 
                 alt="Kabiki Logo" 
+                width={160}
+                height={64}
                 className="h-16 w-auto hover:opacity-80 transition-opacity duration-300"
               />
             </LocalizedClientLink>

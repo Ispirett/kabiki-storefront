@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import Image from "next/image"
 
 import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
@@ -28,10 +29,13 @@ export default async function Nav() {
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity duration-300"
               data-testid="nav-store-link"
             >
-              <img 
+              <Image 
                 src="/images/logo.png" 
                 alt="Kabiki Logo" 
+                width={120}
+                height={48}
                 className="h-12 w-auto"
+                priority
               />
             </LocalizedClientLink>
           </div>
