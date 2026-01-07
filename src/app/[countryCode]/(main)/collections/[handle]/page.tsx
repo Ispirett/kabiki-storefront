@@ -20,52 +20,65 @@ type Props = {
 export const PRODUCT_LIMIT = 12
 
 export async function generateStaticParams() {
-  const { collections } = await listCollections({
-    fields: "*products",
-  })
+  try {
+    const { collections } = await listCollections({
+      fields: "*products",
+    })
 
-  if (!collections) {
+    if (!collections) {
+      return []
+    }
+
+    const countryCodes = await listRegions().then(
+      (regions: StoreRegion[]) =>
+        regions
+          ?.map((r) => r.countries?.map((c) => c.iso_2))
+          .flat()
+          .filter(Boolean) as string[]
+    )
+
+    const collectionHandles = collections.map(
+      (collection: StoreCollection) => collection.handle
+    )
+
+    const staticParams = countryCodes
+      ?.map((countryCode: string) =>
+        collectionHandles.map((handle: string | undefined) => ({
+          countryCode,
+          handle,
+        }))
+      )
+      .flat()
+
+    return staticParams
+  } catch (error) {
+    console.error("Failed to generate static params for collections:", error)
     return []
   }
-
-  const countryCodes = await listRegions().then(
-    (regions: StoreRegion[]) =>
-      regions
-        ?.map((r) => r.countries?.map((c) => c.iso_2))
-        .flat()
-        .filter(Boolean) as string[]
-  )
-
-  const collectionHandles = collections.map(
-    (collection: StoreCollection) => collection.handle
-  )
-
-  const staticParams = countryCodes
-    ?.map((countryCode: string) =>
-      collectionHandles.map((handle: string | undefined) => ({
-        countryCode,
-        handle,
-      }))
-    )
-    .flat()
-
-  return staticParams
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
-  const collection = await getCollectionByHandle(params.handle)
+  try {
+    const params = await props.params
+    const collection = await getCollectionByHandle(params.handle)
 
-  if (!collection) {
-    notFound()
+    if (!collection) {
+      return {
+        title: "Collection | Kabiki - Organic Soaps",
+        description: "Handcrafted organic soaps made with love and natural ingredients",
+      }
+    }
+
+    return {
+      title: `${collection.title} | Kabiki - Organic Soaps`,
+      description: `${collection.title} collection - Handcrafted organic soaps made with love and natural ingredients`,
+    }
+  } catch (error) {
+    return {
+      title: "Collection | Kabiki - Organic Soaps",
+      description: "Handcrafted organic soaps made with love and natural ingredients",
+    }
   }
-
-  const metadata = {
-    title: `${collection.title} | Kabiki - Organic Soaps`,
-    description: `${collection.title} collection - Handcrafted organic soaps made with love and natural ingredients`,
-  } as Metadata
-
-  return metadata
 }
 
 export default async function CollectionPage(props: Props) {
@@ -73,9 +86,9 @@ export default async function CollectionPage(props: Props) {
   const params = await props.params
   const { sortBy, page } = searchParams
 
-  const collection = await getCollectionByHandle(params.handle).then(
-    (collection: StoreCollection) => collection
-  )
+  const collection = await getCollectionByHandle(params.handle)
+    .then((collection: StoreCollection) => collection)
+    .catch(() => null)
 
   if (!collection) {
     notFound()

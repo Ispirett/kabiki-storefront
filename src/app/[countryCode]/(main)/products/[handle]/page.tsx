@@ -53,37 +53,50 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
-  const params = await props.params
-  const { handle } = params
-  const region = await getRegion(params.countryCode)
+  try {
+    const params = await props.params
+    const { handle } = params
+    const region = await getRegion(params.countryCode)
 
-  if (!region) {
-    notFound()
-  }
+    if (!region) {
+      return {
+        title: "Product | Kabiki - Organic Soaps",
+        description: "Handcrafted organic soap made with premium natural ingredients.",
+      }
+    }
 
-  const product = await listProducts({
-    countryCode: params.countryCode,
-    queryParams: { handle },
-  }).then(({ response }) => response.products[0])
+    const product = await listProducts({
+      countryCode: params.countryCode,
+      queryParams: { handle },
+    }).then(({ response }) => response.products[0])
 
-  if (!product) {
-    notFound()
-  }
+    if (!product) {
+      return {
+        title: "Product | Kabiki - Organic Soaps",
+        description: "Handcrafted organic soap made with premium natural ingredients.",
+      }
+    }
 
-  return {
-    title: `${product.title} | Kabiki - Organic Soaps`,
-    description: `${product.description || product.title} - Handcrafted organic soap made with premium natural ingredients for luxurious skincare.`,
-    openGraph: {
+    return {
       title: `${product.title} | Kabiki - Organic Soaps`,
-      description: `${product.description || product.title} - Handcrafted organic soap made with premium natural ingredients.`,
-      images: product.thumbnail ? [product.thumbnail] : [],
-    },
+      description: `${product.description || product.title} - Handcrafted organic soap made with premium natural ingredients for luxurious skincare.`,
+      openGraph: {
+        title: `${product.title} | Kabiki - Organic Soaps`,
+        description: `${product.description || product.title} - Handcrafted organic soap made with premium natural ingredients.`,
+        images: product.thumbnail ? [product.thumbnail] : [],
+      },
+    }
+  } catch (error) {
+    return {
+      title: "Product | Kabiki - Organic Soaps",
+      description: "Handcrafted organic soap made with premium natural ingredients.",
+    }
   }
 }
 
 export default async function ProductPage(props: Props) {
   const params = await props.params
-  const region = await getRegion(params.countryCode)
+  const region = await getRegion(params.countryCode).catch(() => null)
 
   if (!region) {
     notFound()
@@ -92,7 +105,7 @@ export default async function ProductPage(props: Props) {
   const pricedProduct = await listProducts({
     countryCode: params.countryCode,
     queryParams: { handle: params.handle },
-  }).then(({ response }) => response.products[0])
+  }).then(({ response }) => response.products[0]).catch(() => null)
 
   if (!pricedProduct) {
     notFound()

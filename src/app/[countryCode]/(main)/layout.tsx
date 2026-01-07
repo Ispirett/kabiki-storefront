@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 }
 
 export default async function PageLayout(props: { children: React.ReactNode }) {
-  const customer = await retrieveCustomer()
-  const cart = await retrieveCart()
+  const customer = await retrieveCustomer().catch(() => null)
+  const cart = await retrieveCart().catch(() => null)
   let shippingOptions: StoreCartShippingOption[] = []
 
   if (cart) {

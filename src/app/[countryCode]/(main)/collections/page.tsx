@@ -18,12 +18,12 @@ export default async function CollectionsPage(props: {
   const params = await props.params
   const { countryCode } = params
 
-  const region = await getRegion(countryCode)
+  const region = await getRegion(countryCode).catch(() => null)
   
   const { collections } = await listCollections({
     fields: "id, handle, title, metadata",
     limit: "100",
-  })
+  }).catch(() => ({ collections: [] }))
 
   console.log("Collections page - collections:", collections)
   console.log("Collections page - collections length:", collections?.length)
